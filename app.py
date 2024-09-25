@@ -1,12 +1,12 @@
 import gradio as gr
-from image_processing import apply_blur, clip_image, wrap_image
-from detection import yolov10_inference, calculate_detection_metrics
+from Scripts.image_processing import apply_blur, clip_image, wrap_image
+from Scripts.detection import yolov10_inference, calculate_detection_metrics
 from PIL import Image
 import numpy as np
 import torchvision.transforms as transforms
 import torch
-from utils import *
-from utils import modulo
+from Scripts.utils import *
+from Scripts.utils import modulo
 import cv2
 import matplotlib.pyplot as plt
 
