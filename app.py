@@ -7,10 +7,12 @@ import torchvision.transforms as transforms
 import torch
 from Scripts.utils import *
 from Scripts.utils import modulo
+from Scripts.utils_spud import *  # Asegúrate de que las funciones necesarias estén importadas aquí
+
 import cv2
 import matplotlib.pyplot as plt
+import packaging
 
-# Definir el tamaño de la imagen constante
 IMAGE_SIZE = 640  # Asignar el valor constante para image_size
 
 def process_image(image, model_id, sat_factor, selected_method):
@@ -44,7 +46,13 @@ def process_image(image, model_id, sat_factor, selected_method):
     clipped_annotated, clipped_detections = yolov10_inference((clipped_image*255.0).astype(np.uint8), "yolov10n", IMAGE_SIZE, conf_threshold)
     wrapped_annotated, wrapped_detections = yolov10_inference(wrapped_image, model_id, IMAGE_SIZE, conf_threshold)
 
-    recon_image = recons(img_tensor, DO=DO, L=1.0, vertical=vertical, t=t)
+    if selected_method == "SPUD":
+        # Uso de la función personalizada de SPUD
+        recon_image = recons_spud(img_tensor, threshold=0.1, mx=1.0)
+    else:
+        # Método por defecto AHFD
+        recon_image = recons(img_tensor, DO=DO, L=1.0, vertical=vertical, t=t)
+
     recon_image_pil = transforms.ToPILImage()(recon_image.squeeze(0))
     recon_image_np = np.array(recon_image_pil).astype(np.uint8)
 
@@ -134,19 +142,19 @@ def app():
 
         selected_method = gr.Radio(
             label="Select Method",
-            choices=["SPUD", "AHFD"],
+            choices=["AHFD","SPUD"],
             value="SPUD"
         )
         
         process_button = gr.Button("Process Image")
 
         examples = [
-            ["imagen1.png"],
-            ["imagen2.png"],
-            ["imagen3.jpg"],
-            ["imagen4.jpg"],
-            ["imagen5.jpg"],
-            ["imagen6.png"]
+            ["Add_ons/imagen1.png"],
+            ["Add_ons/imagen2.png"],
+            ["Add_ons/imagen3.jpg"],
+            ["Add_ons/imagen4.jpg"],
+            ["Add_ons/imagen5.jpg"],
+            ["Add_ons/imagen6.png"]
         ]
 
         gr.Examples(
